@@ -1,0 +1,45 @@
+<div>
+  <h3>Kính gửi:<strong>{{ name_company }}</strong></h3>
+  <h3>Mã số thuế:<strong>{{ customer_company_tax_code  }}</strong></h3>
+  <h3>Vào ngày <strong>{{created_at}}</strong>, Công ty TNHH sản xuất thương mại dịch vụ 123-zo.vn đã xuất hóa đơn điện
+    tử cho quý khách</h3>
+  <ul>
+    <li>Ký hiệu hóa đơn: {{ invoice_series }}</li>
+    <li>Số hóa đơn: {{invoice_number}}</li>
+    <li>Ngày lập: {{created_at}}</li>
+    <li>Số bảo mật: <strong>{{security_code}}</strong></li>
+  </ul>
+  <h3>Nhằm tạo điều kiện thuận lợi cho Quý khách hàng tra cứu,xem,tải xuống hóa đơn điện tử</h3>
+  <h3>Hóa đơn điện tử TECHRES gửi tới khách hàng hướng dẫn tra cứu như sau:</h3>
+  <ul>
+    <li>Bước 1: Đăng nhập vào website <a href={{search_url}}>{{search_url}}</a></li>
+    <li>Bước 2: Nhập mã số thuế của Đơn vị bán: <strong>{{ tax_code }}</strong></li>
+    <li>Bước 3: Nhập mã số bảo mật (Mã tra cứu hóa đơn):{{ref_code}}</li>
+    <li>Bước 4: Click nút tra cứu</li>
+  </ul>
+  <h3><strong>TECHRES</strong> xin trân trọng cảm ơn Quý khách hàng đã tin tưởng sử dụng dịch vụ của công ty</h3>
+  <h3><strong>Mọi vương mắc và thủ tục liên quan đến doanh nghiệp vui lòng liên hệ theo số {{phone_contact}} hoặc email:<a
+    href={{mail_contact}}>{{mail_contact}}</a> để được giải đáp hướng dẫn</strong></h3>
+  <h3><strong>Chú ý:Đây là email tự động từ hệ thống Hóa đơn điện tử TECHRES.Quý khách vui lòng không trả lời mail
+    này.</strong></h3>
+  <h3><strong>Trân trọng ./.</strong></h3>
+</div>
+<style>
+  div {
+    margin-left: 20px;
+    font-size: 16px;
+  }
+
+  h3 {
+    color: #444;
+  }
+
+  strong {
+    color: #000;
+  }
+
+  li {
+    font-size: 20px;
+    margin: 4px 0;
+  }
+</style>

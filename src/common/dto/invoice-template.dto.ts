@@ -1,0 +1,63 @@
+export class InvoiceTemplateDto {
+  ipTemplateId: string;
+  companyId: number;
+  templateName: string;
+  invTemplateNo: string;
+  invSeries: string;
+  orgInvSeries: string;
+  templateType: number;
+  invoiceType: number;
+  businessAreas: number;
+  sortOrder: number;
+  signedDate: Date | null;
+  createdDate: Date;
+  createdBy: string | null;
+  modifiedDate: Date;
+  modifiedBy: string | null;
+  inactive: boolean;
+  templateContent: string | null;
+  defaultTemplateId: string;
+  isCustomTemplate: boolean;
+  isInheritFromOldTemplate: boolean;
+  xsltVersion: number;
+  isPublished: boolean;
+  isPublishedPetrol: boolean;
+  isSendSummary: boolean;
+  isPetrol: boolean | null;
+  isTemplatePetrol: boolean;
+  mappingConfigVat: any | null;
+  expireDateType: any | null;
+  isMoreVATRate: boolean;
+
+  constructor(data: any) {
+    this.ipTemplateId = data.IPTemplateID;
+    this.companyId = data.CompanyID;
+    this.templateName = data.TemplateName;
+    this.invTemplateNo = data.InvTemplateNo;
+    this.invSeries = data.InvSeries;
+    this.orgInvSeries = data.OrgInvSeries;
+    this.templateType = data.TemplateType;
+    this.invoiceType = data.InvoiceType;
+    this.businessAreas = data.BusinessAreas;
+    this.sortOrder = data.SortOrder;
+    this.signedDate = data.SignedDate ? new Date(data.SignedDate) : null;
+    this.createdDate = new Date(data.CreatedDate);
+    this.createdBy = data.CreatedBy;
+    this.modifiedDate = new Date(data.ModifiedDate);
+    this.modifiedBy = data.ModifiedBy;
+    this.inactive = data.Inactive;
+    this.templateContent = data.TemplateContent;
+    this.defaultTemplateId = data.DefaultTemplateID;
+    this.isCustomTemplate = data.IsCustomTemplate;
+    this.isInheritFromOldTemplate = data.IsInheritFromOldTemplate;
+    this.xsltVersion = data.XsltVersion;
+    this.isPublished = data.IsPublished;
+    this.isPublishedPetrol = data.IsPublishedPetrol;
+    this.isSendSummary = data.IsSendSummary;
+    this.isPetrol = data.IsPetrol;
+    this.isTemplatePetrol = data.IsTemplatePetrol;
+    this.mappingConfigVat = data.MappingConfigVat;
+    this.expireDateType = data.ExpireDateType;
+    this.isMoreVATRate = data.IsMoreVATRate;
+  }
+}

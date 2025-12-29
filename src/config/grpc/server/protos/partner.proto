@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package vn.techres.microservice.grpc.nodejs.nestjs_system_invoice.login_partner.invoice;
+
+service PartnerService {
+  rpc CheckAccountPartner(CheckAccountPartnerRequest) returns (CheckAccountPartnerResponse);
+}
+
+message CheckAccountPartnerRequest {
+  int32 type = 1;
+  string taxcode = 2;
+  string username = 3;
+  string password = 4;
+  string usernameAccessService = 5;
+  string passwordAccessService = 6;
+  string endpoint = 7;
+}
+
+message CheckAccountPartnerResponse {
+  int32 success = 1;
+  string message = 2;
+  string data = 3;
+}

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xem hóa đơn VNPT</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+        .invoice-display {
+            margin-top: 30px;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 4px;
+            min-height: 500px;
+        }
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+        .error {
+            color: #dc3545;
+            padding: 10px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Xem hóa đơn VNPT</h1>
+            <p>Endpoint: {{endpoint}}</p>
+        </div>
+
+        <form id="invoiceForm">
+            <div class="form-group">
+                <label for="fkey">FKey:</label>
+                <input type="text" id="fkey" name="fkey" value="{{fkey}}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="userName">Username:</label>
+                <input type="text" id="userName" name="userName" value="{{userName}}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="userPass">Password:</label>
+                <input type="password" id="userPass" name="userPass" value="{{userPass}}" required>
+            </div>
+            
+            <button type="button" class="btn" onclick="loadInvoice()">Xem hóa đơn</button>
+            <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+        </form>
+
+        <div id="loading" class="loading" style="display: none;">
+            <p>Đang tải hóa đơn...</p>
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+
+        <div class="invoice-display">
+            <div id="invoiceContent">
+                <p style="text-align: center; color: #666;">Nhập thông tin và nhấn "Xem hóa đơn" để hiển thị nội dung</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadInvoice() {
+            const form = document.getElementById('invoiceForm');
+            const fkey = document.getElementById('fkey').value;
+            const userName = document.getElementById('userName').value;
+            const userPass = document.getElementById('userPass').value;
+
+            if (!fkey || !userName || !userPass) {
+                alert('Vui lòng điền đầy đủ thông tin');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('invoiceContent').innerHTML = '';
+
+            try {
+                const response = await fetch('/partner/vnpt/invoice-view/get-html', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ fkey, userName, userPass })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('invoiceContent').innerHTML = result.html;
+                } else {
+                    showError(result.error || 'Có lỗi xảy ra');
+                }
+            } catch (error) {
+                showError('Lỗi kết nối: ' + error.message);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('fkey').value = '{{fkey}}';
+            document.getElementById('userName').value = '{{userName}}';
+            document.getElementById('userPass').value = '{{userPass}}';
+            document.getElementById('invoiceContent').innerHTML = '<p style="text-align: center; color: #666;">Nhập thông tin và nhấn "Xem hóa đơn" để hiển thị nội dung</p>';
+            document.getElementById('error').style.display = 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.style.display = 'block';
+            errorDiv.innerHTML = message;
+        }
+    </script>
+</body>
+</html>

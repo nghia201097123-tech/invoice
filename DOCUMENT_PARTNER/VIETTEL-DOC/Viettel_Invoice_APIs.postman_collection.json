@@ -1,0 +1,540 @@
+{
+	"info": {
+		"_postman_id": "viettel-invoice-api-collection",
+		"name": "Viettel Invoice APIs",
+		"description": "Collection of Viettel Invoice APIs based on clonedoc.md documentation",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"0100109106-712\",\n  \"password\": \"12345678aA@\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "API đăng nhập để lấy access_token"
+					}
+			}
+			]
+		},
+		{
+			"name": "Invoice Management",
+			"item": [
+				{
+					"name": "7.2 - Create Invoice (HSM)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "access_token={{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"supplierTaxCode\": \"0100109106-712\",\n  \"originalInvoiceType\": \"0\",\n  \"originalTemplateCode\": \"\",\n  \"generalInvoiceInfo\": {\n    \"invoiceType\": \"03XKNB\",\n    \"templateCode\": \"03XKNB0/003\",\n    \"invoiceSeries\": \"AA/20E\",\n    \"currencyCode\": \"VND\",\n    \"adjustmentType\": \"1\",\n    \"paymentStatus\": true,\n    \"cusGetInvoiceRight\": true\n  },\n  \"sellerInfo\": {\n    \"sellerLegalName\": \"Người bán hàng\",\n    \"sellerTaxCode\": \"0100109106-712\",\n    \"sellerAddressLine\": \"Thành Phố Hà Nội - Việt Nam\",\n    \"sellerPhoneNumber\": \"0123456789\",\n    \"sellerEmail\": \"email@gmail.com\"\n  },\n  \"buyerInfo\": {\n    \"buyerName\": \"Tên khách hàng\",\n    \"buyerLegalName\": \"Tên đơn vị\",\n    \"buyerTaxCode\": \"0100109106\",\n    \"buyerAddressLine\": \"An Khánh Hoài Đức Hà Nội\",\n    \"buyerPhoneNumber\": \"987999999\",\n    \"buyerEmail\": \"abc@gmail.com\"\n  },\n  \"payments\": [\n    {\n      \"paymentMethodName\": \"Tiền mặt\"\n    }\n  ],\n  \"itemInfo\": [\n    {\n      \"lineNumber\": 1,\n      \"itemName\": \"Tên hàng hóa\",\n      \"unitName\": \"Cái\",\n      \"unitPrice\": 100000,\n      \"quantity\": 1,\n      \"itemTotalAmountWithoutTax\": 100000,\n      \"taxPercentage\": 10,\n      \"taxAmount\": 10000,\n      \"itemTotalAmountWithTax\": 110000\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/InvoiceAPI/InvoiceWS/createInvoice/{{supplierTaxCode}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"InvoiceAPI",
+								"InvoiceWS",
+								"createInvoice",
+								"{{supplierTaxCode}}"
+							]
+						},
+						"description": "Phát hành/thay thế/điều chỉnh hóa đơn (Dùng cho CTS HSM)"
+					}
+				},
+				{
+					"name": "7.3 - Get Invoice File",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "access_token={{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/InvoiceAPI/InvoiceUtilsWS/getInvoiceFile?supplierTaxCode={{supplierTaxCode}}&templateCode={{templateCode}}&invoiceNo={{invoiceNo}}&fileType={{fileType}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"InvoiceAPI",
+								"InvoiceUtilsWS",
+								"getInvoiceFile"
+							],
+							"query": [
+								{
+									"key": "supplierTaxCode",
+									"value": "{{supplierTaxCode}}"
+								},
+								{
+									"key": "templateCode",
+									"value": "{{templateCode}}"
+								},
+								{
+									"key": "invoiceNo",
+									"value": "{{invoiceNo}}"
+								},
+								{
+									"key": "fileType",
+									"value": "{{fileType}}"
+								}
+							]
+						},
+						"description": "Lấy file hóa đơn"
+					}
+				},
+				{
+					"name": "7.6 - Cancel Invoice",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "access_token={{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"supplierTaxCode\": \"{{supplierTaxCode}}\",\n  \"templateCode\": \"{{templateCode}}\",\n  \"invoiceNo\": \"{{invoiceNo}}\",\n  \"strIssueDate\": \"{{strIssueDate}}\",\n  \"additionalReferenceDesc\": \"Lý do hủy hóa đơn\",\n  \"additionalReferenceDate\": \"{{additionalReferenceDate}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/InvoiceAPI/InvoiceWS/cancelTransactionInvoice/{{supplierTaxCode}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"InvoiceAPI",
+								"InvoiceWS",
+								"cancelTransactionInvoice",
+								"{{supplierTaxCode}}"
+							]
+						},
+						"description": "Hủy hóa đơn"
+					}
+				},
+				{
+					"name": "7.7 - Search Invoice",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "access_token={{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/InvoiceAPI/InvoiceUtilsWS/searchInvoice?supplierTaxCode={{supplierTaxCode}}&templateCode={{templateCode}}&invoiceNo={{invoiceNo}}&strIssueDate={{strIssueDate}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"InvoiceAPI",
+								"InvoiceUtilsWS",
+								"searchInvoice"
+							],
+							"query": [
+								{
+									"key": "supplierTaxCode",
+									"value": "{{supplierTaxCode}}"
+								},
+								{
+									"key": "templateCode",
+									"value": "{{templateCode}}"
+								},
+								{
+									"key": "invoiceNo",
+									"value": "{{invoiceNo}}"
+								},
+								{
+									"key": "strIssueDate",
+									"value": "{{strIssueDate}}"
+								}
+							]
+						},
+						"description": "Tra cứu hóa đơn"
+					}
+				},
+				{
+					"name": "7.21 - Search Invoice by TransactionUuid",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "access_token={{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/InvoiceAPI/InvoiceUtilsWS/searchInvoiceByTransactionUuid?supplierTaxCode={{supplierTaxCode}}&transactionUuid={{transactionUuid}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"InvoiceAPI",
+								"InvoiceUtilsWS",
+								"searchInvoiceByTransactionUuid"
+							],
+							"query": [
+								{
+									"key": "supplierTaxCode",
+									"value": "{{supplierTaxCode}}"
+								},
+								{
+									"key": "transactionUuid",
+									"value": "{{transactionUuid}}"
+								}
+							]
+						},
+						"description": "Tra cứu hóa đơn bằng transactionUuid"
+					}
+				},
+				{
+					"name": "7.22 - Get Reservation Code",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "access_token={{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"transactionUuid\": \"{{transactionUuid}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/InvoiceAPI/BotWS/getReservationCode/{{taxCode}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"InvoiceAPI",
+								"BotWS",
+								"getReservationCode",
+								"{{taxCode}}"
+							]
+						},
+						"description": "Cấp mã bí mật"
+					}
+				},
+				{
+					"name": "7.25 - Update Invoice Print Status",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "access_token={{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"supplierTaxCode\": \"{{supplierTaxCode}}\",\n  \"templateCode\": \"{{templateCode}}\",\n  \"invoiceNo\": \"{{invoiceNo}}\",\n  \"strIssueDate\": \"{{strIssueDate}}\",\n  \"printStatus\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/InvoiceAPI/InvoiceUtilsWS/updateInvoicePrintStatus",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"InvoiceAPI",
+								"InvoiceUtilsWS",
+								"updateInvoicePrintStatus"
+							]
+						},
+						"description": "Cập nhật trạng thái in hóa đơn"
+					}
+				},
+				{
+					"name": "7.24 - Update QR Code Scan Count",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "access_token={{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"supplierTaxCode\": \"{{supplierTaxCode}}\",\n  \"templateCode\": \"{{templateCode}}\",\n  \"invoiceNo\": \"{{invoiceNo}}\",\n  \"strIssueDate\": \"{{strIssueDate}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/InvoiceAPI/InvoiceUtilsWS/updateInvoiceScanQrcode",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"InvoiceAPI",
+								"InvoiceUtilsWS",
+								"updateInvoiceScanQrcode"
+							]
+						},
+						"description": "Số lần quét QRcode của hóa đơn"
+					}
+				},
+				{
+					"name": "7.25 - Get Invoice Usage Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "access_token={{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/InvoiceAPI/InvoiceWS/getInvoiceUsage?supplierTaxCode={{supplierTaxCode}}&templateCode={{templateCode}}&fromDate={{fromDate}}&toDate={{toDate}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"InvoiceAPI",
+								"InvoiceWS",
+								"getInvoiceUsage"
+							],
+							"query": [
+								{
+									"key": "supplierTaxCode",
+									"value": "{{supplierTaxCode}}"
+								},
+								{
+									"key": "templateCode",
+									"value": "{{templateCode}}"
+								},
+								{
+									"key": "fromDate",
+									"value": "{{fromDate}}"
+								},
+								{
+									"key": "toDate",
+									"value": "{{toDate}}"
+								}
+							]
+						},
+						"description": "Thống kê hóa đơn theo user"
+					}
+				},
+				{
+					"name": "7.26 - Update Explanation",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "access_token={{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"supplierTaxCode\": \"{{supplierTaxCode}}\",\n  \"templateCode\": \"{{templateCode}}\",\n  \"invoiceNo\": \"{{invoiceNo}}\",\n  \"explanation\": \"Nội dung giải trình\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/InvoiceWS/update-explanation",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"InvoiceWS",
+								"update-explanation"
+							]
+						},
+						"description": "Giải trình"
+					}
+				},
+				{
+					"name": "7.27 - Create Invoice with Secret Code (HSM)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "access_token={{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reservationCode\": \"{{reservationCode}}\",\n  \"supplierTaxCode\": \"{{supplierTaxCode}}\",\n  \"generalInvoiceInfo\": {\n    \"invoiceType\": \"03XKNB\",\n    \"templateCode\": \"03XKNB0/003\",\n    \"invoiceSeries\": \"AA/20E\",\n    \"currencyCode\": \"VND\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/InvoiceAPI/BotWS/createInvoiceWithCode/{{taxCode}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"InvoiceAPI",
+								"BotWS",
+								"createInvoiceWithCode",
+								"{{taxCode}}"
+							]
+						},
+						"description": "Phát hành hóa đơn có mã bí mật cho CTS SERVER"
+					}
+				},
+				{
+					"name": "7.29 - Get All Invoice Templates",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "access_token={{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/InvoiceAPI/InvoiceUtilsWS/getAllInvoiceTemplates?supplierTaxCode={{supplierTaxCode}}&invoiceType={{invoiceType}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"InvoiceAPI",
+								"InvoiceUtilsWS",
+								"getAllInvoiceTemplates"
+							],
+							"query": [
+								{
+									"key": "supplierTaxCode",
+									"value": "{{supplierTaxCode}}"
+								},
+								{
+									"key": "invoiceType",
+									"value": "{{invoiceType}}"
+								}
+							]
+						},
+						"description": "Lấy danh sách mẫu và ký hiệu hóa đơn theo mã số thuế trên toàn hệ thống"
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://api-vinvoice.viettel.vn/services/einvoiceapplication/api",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "supplierTaxCode",
+			"value": "0100109106-712",
+			"type": "string"
+		},
+		{
+			"key": "taxCode",
+			"value": "0100109106-712",
+			"type": "string"
+		},
+		{
+			"key": "templateCode",
+			"value": "03XKNB0/003",
+			"type": "string"
+		},
+		{
+			"key": "invoiceNo",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "strIssueDate",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "transactionUuid",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "fileType",
+			"value": "PDF",
+			"type": "string"
+		},
+		{
+			"key": "invoiceType",
+			"value": "03XKNB",
+			"type": "string"
+		},
+		{
+			"key": "fromDate",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "toDate",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "additionalReferenceDate",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "reservationCode",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
