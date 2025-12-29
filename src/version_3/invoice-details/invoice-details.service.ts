@@ -344,7 +344,7 @@ export class InvoiceDetailsService {
         return cachedData;
       }
     } catch (error) {
-      console.warn("Cache read error for invoice details:", error);
+      this.logger.warn(`Cache read error for invoice details: ${error.message}`);
     }
 
     try {
@@ -384,12 +384,12 @@ export class InvoiceDetailsService {
       try {
         await this.setCachedData(cacheKey, invoiceDetails, 180);
       } catch (error) {
-        console.warn("Cache write error for invoice details:", error);
+        this.logger.warn(`Cache write error for invoice details: ${error.message}`);
       }
 
       return invoiceDetails;
     } catch (error) {
-      console.error("Error fetching invoice details by order_id:", error);
+      this.logger.error("Error fetching invoice details by order_id:", error);
       throw error;
     }
   }
@@ -1496,8 +1496,8 @@ export class InvoiceDetailsService {
         status: 1,
       });
 
-      console.log(
-        `🔄 Đã query lại dữ liệu sau khi update - Found ${invoiceDetailModelMap.length} records`
+      this.logger.debug(
+        `Re-queried data after update - Found ${invoiceDetailModelMap.length} records`
       );
     } else {
       // Sử dụng dữ liệu hiện tại nếu không có thay đổi
@@ -1506,8 +1506,8 @@ export class InvoiceDetailsService {
         status: 1,
       });
 
-      console.log(
-        `📋 Sử dụng dữ liệu hiện tại - Found ${invoiceDetailModelMap.length} records`
+      this.logger.debug(
+        `Using current data - Found ${invoiceDetailModelMap.length} records`
       );
     }
     const isDisCountAll: boolean = invoice.total_amount_discount_amount > 0;

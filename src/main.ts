@@ -240,8 +240,11 @@ function setupApplicationErrorHandling(app: NestFastifyApplication): void {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
-      whitelist: false,
+      whitelist: true,
       forbidNonWhitelisted: false,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
       exceptionFactory: (
         validationErrors: ValidationError[] = []
       ): HttpException => {
@@ -253,7 +256,7 @@ function setupApplicationErrorHandling(app: NestFastifyApplication): void {
 
           return new HttpException(
             new ExceptionResponseDetail(HttpStatus.BAD_REQUEST, errorMessage),
-            HttpStatus.OK
+            HttpStatus.BAD_REQUEST
           );
         } catch (error) {
           logger.error("Error in validation exception factory:", error);

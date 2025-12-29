@@ -1016,12 +1016,9 @@ export class InvoicesService {
               PartnerElectronicInvoiceTypeEnum.VIETTEL
             );
         }
-      } else {
-        console.log(InvoiceHandlerException.ID_NOT_EXIST(exportInvoiceDTO.id));
       }
     } catch (e) {
-      console.log(e);
-      console.log("error on auto export , infomation : ", invoice);
+      this.logger.error(`Error on auto export for invoice ${invoice?._id}:`, e);
     }
   }
 
@@ -1408,17 +1405,17 @@ export class InvoicesService {
 
     const restaurantBrand: RestaurantBrandEntity =
       await this.restaurantBrandService.findById(branch.restaurant_brand_id);
-    const housrToReport: number = restaurantBrand.setting.hour_to_take_report;
+    const hourToReport: number = restaurantBrand.setting.hour_to_take_report;
 
     // Parse dates with hour adjustment if needed
     let fromDateObj, toDateObj;
 
-    if (housrToReport !== 0) {
+    if (hourToReport !== 0) {
       const [dayFrom, monthFrom, yearFrom] = from_date.split("/").map(Number);
       const [dayTo, monthTo, yearTo] = to_date.split("/").map(Number);
 
       fromDateObj = new Date(
-        Date.UTC(yearFrom, monthFrom - 1, dayFrom, housrToReport - 7, 0, 0, 0)
+        Date.UTC(yearFrom, monthFrom - 1, dayFrom, hourToReport - 7, 0, 0, 0)
       );
 
       // End date
@@ -1435,7 +1432,7 @@ export class InvoicesService {
       }
 
       toDateObj = new Date(
-        Date.UTC(endYear, endMonth - 1, endDay, housrToReport - 7, 0, 0, 0)
+        Date.UTC(endYear, endMonth - 1, endDay, hourToReport - 7, 0, 0, 0)
       );
     } else {
       fromDateObj = UtilsDate.parseFromDateString(from_date);
@@ -1734,7 +1731,6 @@ export class InvoicesService {
       from_date,
       to_date
     );
-    console.log(123);
 
     const searchConditions = await this.buildSearchConditions(searchKeyword);
     const finalQuery = { $and: [cleanedQuery, searchConditions] };
@@ -1884,25 +1880,21 @@ export class InvoicesService {
         delete queryParams[field];
       }
     });
-    console.log(queryParams);
 
     const branch: Branch = await this.branchService.findOneByBranchId(
       branch_id
     );
 
-    console.log("branch", branch);
-
     const restaurantBrand: RestaurantBrandEntity =
       await this.restaurantBrandService.findById(branch.restaurant_brand_id);
-    const housrToReport: number = restaurantBrand.setting.hour_to_take_report;
-    console.log("housrToReport ", housrToReport);
+    const hourToReport: number = restaurantBrand.setting.hour_to_take_report;
 
     let fromDateObj, toDateObj;
-    if (housrToReport !== 0) {
+    if (hourToReport !== 0) {
       const [dayFrom, monthFrom, yearFrom] = from_date.split("/").map(Number);
       const [dayTo, monthTo, yearTo] = to_date.split("/").map(Number);
       fromDateObj = new Date(
-        Date.UTC(yearFrom, monthFrom - 1, dayFrom, housrToReport - 7, 0, 0, 0)
+        Date.UTC(yearFrom, monthFrom - 1, dayFrom, hourToReport - 7, 0, 0, 0)
       );
 
       let endYear = yearTo;
@@ -1918,7 +1910,7 @@ export class InvoicesService {
       }
 
       toDateObj = new Date(
-        Date.UTC(endYear, endMonth - 1, endDay, housrToReport - 7, 0, 0, 0)
+        Date.UTC(endYear, endMonth - 1, endDay, hourToReport - 7, 0, 0, 0)
       );
     } else {
       fromDateObj = UtilsDate.parseFromDateString(from_date);
@@ -2511,13 +2503,13 @@ export class InvoicesService {
         }
       }
 
-      console.log(
-        `Đã xóa ${orderIds.length} order_id khỏi Redis cache processed orders`
+      this.logger.log(
+        `Removed ${orderIds.length} order_ids from Redis cache processed orders`
       );
 
       return invoices.length;
     } catch (error) {
-      console.error("Error in syncInvoices:", error);
+      this.logger.error("Error in syncInvoices:", error);
       throw new HttpException(
         new ExceptionResponseDetail(
           HttpStatus.INTERNAL_SERVER_ERROR,
@@ -2580,14 +2572,13 @@ export class InvoicesService {
               PROCESSED_ORDERS_KEY
             );
           } catch (error) {
-            console.warn(
-              `Failed to remove missing order ${orderId} from processed cache:`,
-              error.message
+            this.logger.warn(
+              `Failed to remove missing order ${orderId} from processed cache: ${error.message}`
             );
           }
         }
-        console.log(
-          `Đã xóa ${missingOrderIds.length} missing order_id khỏi Redis cache processed orders`
+        this.logger.log(
+          `Removed ${missingOrderIds.length} missing order_ids from Redis cache processed orders`
         );
       }
 
@@ -2597,8 +2588,8 @@ export class InvoicesService {
           "kafka.topic.sync-invoice-from-order",
           missingOrderIds
         );
-        console.log(
-          `Đã gửi lại ${cachedOrderIds.length} order_id qua Kafka từ Redis key: ${redis_key}`
+        this.logger.log(
+          `Resent ${cachedOrderIds.length} order_ids via Kafka from Redis key: ${redis_key}`
         );
       }
 
@@ -2608,7 +2599,7 @@ export class InvoicesService {
         throw error;
       }
 
-      console.error("Error in checkMissingOrders:", error);
+      this.logger.error("Error in checkMissingOrders:", error);
       throw new HttpException(
         new ExceptionResponseDetail(
           HttpStatus.INTERNAL_SERVER_ERROR,
@@ -2680,17 +2671,15 @@ export class InvoicesService {
             PROCESSED_ORDERS_KEY
           );
         } catch (error) {
-          console.warn(
-            `Failed to remove order ${orderId} from processed cache:`,
-            error.message
+          this.logger.warn(
+            `Failed to remove order ${orderId} from processed cache: ${error.message}`
           );
         }
       }
 
-      console.log(
-        `Đã sync ${existingOrderIds.length} order_id cụ thể và xóa khỏi Redis cache processed orders`
+      this.logger.log(
+        `Synced ${existingOrderIds.length} specific order_ids and removed from Redis cache. Tracking key: ${redisKey}`
       );
-      console.log(`Redis tracking key: ${redisKey}`);
 
       return new SyncSpecificOrdersResponse(
         existingOrderIds.length,
@@ -2698,7 +2687,7 @@ export class InvoicesService {
         skippedOrderIds
       );
     } catch (error) {
-      console.error("Error in syncSpecificOrders:", error);
+      this.logger.error("Error in syncSpecificOrders:", error);
       throw new HttpException(
         new ExceptionResponseDetail(
           HttpStatus.INTERNAL_SERVER_ERROR,
@@ -2850,7 +2839,6 @@ export class InvoicesService {
       if (await_result && createdJob && jobId) {
         try {
           const jobResult = await createdJob.finished();
-          console.log(jobResult);
 
           const failures = Array.isArray(jobResult?.results)
             ? jobResult.results.filter((r: any) => !r.success)
@@ -2901,7 +2889,7 @@ export class InvoicesService {
 
       return response;
     } catch (error) {
-      console.error("[BULK-EXPORT] Error creating bulk export job:", error);
+      this.logger.error("[BULK-EXPORT] Error creating bulk export job:", error);
 
       if (error instanceof HttpException) {
         throw error;
@@ -2919,7 +2907,9 @@ export class InvoicesService {
             : HttpStatus.INTERNAL_SERVER_ERROR,
           finalErrMsg
         ),
-        isFailedInvoicesMsg ? HttpStatus.BAD_REQUEST : HttpStatus.OK
+        isFailedInvoicesMsg
+          ? HttpStatus.BAD_REQUEST
+          : HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -2993,14 +2983,14 @@ export class InvoicesService {
         },
       };
     } catch (error) {
-      console.error("[FAILED-INVOICES] Error getting failed invoices:", error);
+      this.logger.error("[FAILED-INVOICES] Error getting failed invoices:", error);
 
       throw new HttpException(
         new ExceptionResponseDetail(
           HttpStatus.INTERNAL_SERVER_ERROR,
           `Lỗi khi lấy danh sách hóa đơn lỗi: ${error.message}`
         ),
-        HttpStatus.OK
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -3038,7 +3028,7 @@ export class InvoicesService {
       );
       return ids;
     } catch (error) {
-      console.error(
+      this.logger.error(
         "[FAILED-INVOICE-IDS] Error getting failed invoice ids:",
         error
       );
@@ -3048,7 +3038,7 @@ export class InvoicesService {
           HttpStatus.INTERNAL_SERVER_ERROR,
           `Lỗi khi lấy danh sách _id hóa đơn lỗi: ${error.message}`
         ),
-        HttpStatus.OK
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -3073,7 +3063,7 @@ export class InvoicesService {
         daily_stats: [], // Tạm thời trả về mảng rỗng, có thể implement sau
       };
     } catch (error) {
-      console.error(
+      this.logger.error(
         "[FAILED-INVOICES-STATS] Error getting failed invoices stats:",
         error
       );
@@ -3083,7 +3073,7 @@ export class InvoicesService {
           HttpStatus.INTERNAL_SERVER_ERROR,
           `Lỗi khi lấy thống kê hóa đơn lỗi: ${error.message}`
         ),
-        HttpStatus.OK
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
