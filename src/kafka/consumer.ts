@@ -218,7 +218,6 @@ export class Consumer implements OnModuleInit {
         let orderId: string | undefined;
         try {
           const rawData = message.value?.toString();
-          console.log("raw-data : ", rawData);
           if (!rawData) {
             this.logger.warn(
               `Empty message received at offset ${message.offset}`
@@ -276,7 +275,7 @@ export class Consumer implements OnModuleInit {
 
           await this.processCacheInvalidationMessage(data);
         } catch (error) {
-          console.log(error);
+          this.logger.error("Error processing cache invalidation message:", error);
         }
       },
     });
@@ -1097,35 +1096,12 @@ export class Consumer implements OnModuleInit {
       let itemDiscountAmount = detail.discount_amount || 0;
       if (calculatedDiscount > 0) {
         itemDiscountAmount = calculatedDiscount;
-        // **LƯU DISCOUNT_AMOUNT THỰC TẾ**
         detail.discount_amount = itemDiscountAmount;
-
-        if (invoice.order_id == 883016 || invoice.order_id == 883065) {
-          console.log(
-            "DEBUG Calculated discount for detail",
-            detail.order_detail_id,
-            "original_total_without_vat:",
-            originalTotalWithoutVat,
-            "actual_total:",
-            actualTotal,
-            "calculated_discount:",
-            calculatedDiscount
-          );
-        }
       }
 
       if (itemDiscountAmount > 0) {
         hasItemDiscount = true;
         totalItemDiscountAmount += itemDiscountAmount;
-
-        if (invoice.order_id == 883016 || invoice.order_id == 883065) {
-          console.log(
-            "DEBUG Found item discount for detail",
-            detail.order_detail_id,
-            "discount_amount:",
-            itemDiscountAmount
-          );
-        }
       }
     });
 
@@ -1312,20 +1288,9 @@ export class Consumer implements OnModuleInit {
     });
 
     // === BƯỚC 2: XỬ LÝ DISCOUNT CHO RESTAURANT ORDER ===
-    let hasDiscountDifference = hasItemDiscount; // Sử dụng giá trị đã phát hiện từ calculateVatAmountsForRestaurant
-    let totalOriginalDiscountAmount = totalItemDiscountAmount; // Sử dụng giá trị đã tính từ calculateVatAmountsForRestaurant
-    if (invoice.order_id == 883016 || invoice.order_id == 883065) {
-      console.log(
-        "DEBUG Order",
-        invoice.order_id,
-        "hasDiscountDifference",
-        hasDiscountDifference,
-        "isDiscountAll",
-        isDiscountAll,
-        "hasItemDiscount",
-        hasItemDiscount
-      );
-    }
+    let hasDiscountDifference = hasItemDiscount;
+    let totalOriginalDiscountAmount = totalItemDiscountAmount;
+
     detailCalculations.forEach((calculation) => {
       const { detail } = calculation;
 
