@@ -245,16 +245,9 @@ export class InvoiceMisaDetails {
       100
     );
     this.VATAmount = Math.ceil(this.VATAmountOC * ExchangeRate);
-    this.AmountAfterTax = Math.ceil(
-      this.AmountOC -
-      this.DiscountAmountOC +
-      this.ServiceAmountOC +
-      ExciseTaxAmountOC +
-      this.VATAmountOC
-    );
-    this.UnitAfterTax = Math.ceil(
-      this.UnitPrice - this.DiscountAmount + this.VATAmountOC / this.Quantity
-    );
+    // Thành tiền = Số lượng × Đơn giá (không cộng VAT vào thành tiền món ăn)
+    this.AmountAfterTax = Math.ceil(this.Quantity * this.UnitPrice);
+    this.UnitAfterTax = this.UnitPrice;
     this.SortOrder = index ?? 0;
     this.SortOrderView = index ?? 0;
     this.InventoryItemType = 0;
