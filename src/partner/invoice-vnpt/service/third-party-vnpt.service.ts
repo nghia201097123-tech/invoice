@@ -342,28 +342,30 @@ export class ThirdPartyVnPt implements ThirdParty, IInvoiceVNPt {
     invoiceDetails: InvoiceDetail[],
     restaurantInvoiceVat?: number
   ): any[] {
-    const isApplyRestaurantInvoiceVat =
-      restaurantInvoiceVat !== undefined && restaurantInvoiceVat > 0;
+    return invoiceDetails.map((detail, index) => {
+      const quantity = detail ? Number(detail.quantity.toFixed(2)) : 0;
+      const unitPrice = detail.price ?? 0;
+      // Thành tiền = Số lượng × Đơn giá (không cộng VAT vào thành tiền món ăn)
+      const thanhTien = Math.ceil(quantity * unitPrice);
 
-    return invoiceDetails.map((detail, index) => ({
-      HHDVu: {
-        TChat: 1,
-        STT: index,
-        MHHDVu: "DV",
-        THHDVu: detail.food_name,
-        DVTinh: detail.food_unit,
-        SLuong: detail ? Number(detail.quantity.toFixed(2)) : 0,
-        DGia: detail.price,
-        TLCKhau: detail.discount_percent,
-        STCKhau: detail.discount_amount,
-        ThTien: isApplyRestaurantInvoiceVat
-          ? detail.total_amount
-          : detail.total_amount_without_vat - detail.discount_amount,
-        TSuat: detail.vat,
-        TThue: detail.vat_amount,
-        TSThue: detail.total_amount + detail.vat_amount,
-      },
-    }));
+      return {
+        HHDVu: {
+          TChat: 1,
+          STT: index,
+          MHHDVu: "DV",
+          THHDVu: detail.food_name,
+          DVTinh: detail.food_unit,
+          SLuong: quantity,
+          DGia: unitPrice,
+          TLCKhau: detail.discount_percent,
+          STCKhau: detail.discount_amount,
+          ThTien: thanhTien,
+          TSuat: detail.vat,
+          TThue: detail.vat_amount,
+          TSThue: thanhTien + (detail.vat_amount ?? 0),
+        },
+      };
+    });
   }
 
   private generateXmlData(DSHHDVu: any[]): string {
